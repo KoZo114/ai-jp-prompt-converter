@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>画像生成AI用プロンプト変換ツール</title>
+<style>
+    body {
+        font-family: sans-serif;
+        padding: 20px;
+        max-width: 600px;
+        margin: auto;
+        background-color: #f9f9f9;
+        color: #333;
+    }
+    .container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h2 { font-size: 1.2em; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+    textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-family: monospace;
+    }
+    .btn {
+        padding: 10px 20px;
+        cursor: pointer;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+    }
+    .btn-convert { background-color: #4A90E2; }
+    .btn-convert:hover { background-color: #357ABD; }
+    .btn-copy { background-color: #50E3C2; color: #333; }
+    .btn-copy:hover { background-color: #3BCEAD; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>文字を「改行＋Unicode」に変換</h2>
+    
+    <label for="inputText"><strong>1. 日本語を入力してください</strong></label>
+    <textarea id="inputText" rows="3" placeholder="例：うっそー！"></textarea>
+    
+    <button class="btn btn-convert" onclick="convertToUnicode()">暗号化する（変換）</button>
+
+    <div style="margin-top: 30px;">
+        <label for="outputText"><strong>2. 変換結果（プロンプト用）</strong></label>
+        <p style="font-size: 0.8em; color: #666;">※前後に改行（空行）が含まれています。このままコピーしてください。</p>
+        <textarea id="outputText" rows="6" readonly></textarea>
+        
+        <button class="btn btn-copy" onclick="copyToClipboard()">コピーする</button>
+    </div>
+</div>
+
+<script>
+function convertToUnicode() {
+    const input = document.getElementById('inputText').value;
+    let unicodeStr = '';
+    
+    // 1文字ずつUnicodeの16進数に変換
+    for (let i = 0; i < input.length; i++) {
+        let hex = input.charCodeAt(i).toString(16).padStart(4, '0');
+        unicodeStr += '\\u' + hex;
+    }
+
+    // 前後に2行分の改行を追加して出力エリアにセット
+    const finalResult = '\n\n' + unicodeStr + '\n\n';
+    document.getElementById('outputText').value = finalResult;
+}
+
+function copyToClipboard() {
+    const outputArea = document.getElementById('outputText');
+    if (!outputArea.value) {
+        alert('先に変換を行ってください。');
+        return;
+    }
+    
+    // クリップボードにコピー
+    navigator.clipboard.writeText(outputArea.value).then(() => {
+        alert('コピーしました！プロンプトに貼り付けて使ってください。');
+    }).catch(err => {
+        alert('コピーに失敗しました。お手数ですが手動でコピーしてください。');
+    });
+}
+</script>
+
+</body>
+</html>
